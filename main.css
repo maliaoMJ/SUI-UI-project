@@ -29,6 +29,7 @@
 	top:0px;
 	left:0px;
 	margin-bottom: 20px;
+	padding-right: 20px;
 }
 .top_box{
 	height:40px;
@@ -104,7 +105,7 @@
 	line-height: 30px;
 }
 .bottom_box .item_icon_box:last-child{
-	border-left:0px solid red;
+	border-right:0px solid red;
 }
 .goods_box{
 	width:80px;
@@ -132,3 +133,4 @@
 	text-align: center;
 	line-height: 28px;
 }
+

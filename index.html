@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>你的指尖，有改变世界的力量</title>
+	<link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
+	<link rel="stylesheet" type="text/css" href="main.css">
+	<style media="screen">
+
+	</style>
+</head>
+<body>
+	 <div class="page-group">
+		 <!--首页-->
+        <div class="page page-current" >
+          <header class="bar bar-nav " id="index_header">
+          	<span class="icon open-panel icon-me pull-left"  data-panel="#panel" id="user_icon"></span>
+			<h1 class="title index_title" id="">Cnode社区</h1>
+          </header>
+		  <div class="content infinite-scroll infinite-scroll-bottom" data-distance="55">
+		  	<div class="buttons-tab">
+		  		<a href="#all" class="tab-link button active">全部</a>
+		  		<a href="#good" class="tab-link button ">精华</a>
+		  		<a href="#share" class="tab-link button ">分享</a>
+		  		<a href="#ask" class="tab-link button ">问答</a>
+		  		<a href="#job" class="tab-link button ">招聘</a>
+		  		<a href="#test" class="tab-link button ">测试</a>
+		  	</div>
+			<div class="content-block" >
+				<div class="tabs">
+					<div id="all" class="tab active">
+							<div class="list-block">
+								 <div class="list-container">
+									 <!--  Item-->
+
+									<!--Item over  -->
+								</div>
+							</div>
+							 <!-- 加载提示符 -->
+							<div class="infinite-scroll-preloader">
+								 <span class="preloader"></span>
+								 <span>正在加载中。。。</span>
+							</div>
+
+
+					</div>
+					<div id="good" class="tab">
+						<div class="content-block">good</div>
+					 </div>
+					<div id="share" class="tab">
+						<div class="content-block">share</div>
+					</div>
+					<div id="ask" class="tab">
+						<div class="content-block">ask</div>
+					</div>
+					<div id="job" class="tab">
+						<div class="content-block">job</div>
+					</div>
+					<div id="test" class="tab">
+						<div class="content-block">test</div>
+					</div>
+				</div>
+			</div>
+		  </div>
+		</div>
+		<!--首页结束-->
+     </div>
+     <!-- 侧边栏 -->
+     <div class="panel panel-left panel-reveal" id="panel">
+       <a href="#" class="button button-fill close-panel theme-dark"> close panel</a>
+     </div>
+</body>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.js' charset='utf-8'></script>
+<!--如果你用到了拓展包中的组件，还需要引用下面两个-->
+<link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm-extend.css">
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm-extend.js' charset='utf-8'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/handlebars.js/4.0.11/handlebars.min.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/x-handlerbars-template" id="list-item-template">
+     {{#each this}}
+		<div class="item-content" data-article-id = {{id}}>
+			<div class="top_box">
+			  <img src={{author.avatar_url}} alt="">
+			  <div class="info_text">
+				<p class="user_name">{{author.loginname}}</p>
+				<p class="time">{{formattime last_reply_at}}<span class="type">#{{tab}}</span></p>
+			  </div>
+			</div>
+			<div class="center_box">
+				<p class="article_title">{{title}}</p>
+			</div>
+			<div class="bottom_box">
+			   <div class="item_icon_box">
+				<span class="icon_item icon icon-star"></span>
+				<span class="text">{{visit_count}}</span>
+			   </div>
+			   <div class="item_icon_box">
+				<span class="icon_item icon icon-message"></span>
+				<span class="text">{{reply_count}}</span>
+			   </div>
+			   <div class="item_icon_box">
+				<span class="icon_item icon icon-clock"></span>
+				<span class="text">{{formattime last_reply_at}}</span>
+			   </div>
+			</div>
+			<div class="goods_box" {{#isExit good}} style="display:none" {{/isExit}}>精华</div>
+			<div class="over_box" {{#isExit top}} style="display:none" {{/isExit}}>置顶</div>
+		</div>
+{{/each}}
+</script>
+<script type="text/javascript">
+	$.init()
+	var resultAll = []
+	var pageNumberAll = 1
+	var articleType = 'all'
+	//获取文章列表url:
+	const LISTURL = 'https://cnodejs.org/api/v1/topics'
+    // 获取数据函数
+    function getData(url,pageNumberAll,methodType,articleType){
+
+		let promise = new Promise((resolve,reject)=>{
+			$.ajax({
+				url:`${url}?page=${pageNumberAll}&tab=${articleType}&limit=20`,
+				dataType:'json',
+				method:methodType,
+				success:function(data){
+					if(data.success){
+						resolve(data.data)
+					}else{
+					    reject('不是你的问题，就是我的问题！')
+					}
+				},
+				error:function(error){
+					reject(error)
+				}
+			})
+		})
+        // 返回类型Promise
+		return promise
+	}
+
+	//时间格式化
+	function getTimeInfos(str) {
+			   if (!str) {
+				   return ''
+			   }
+			   const date = new Date(str);
+			   const time = new Date().getTime() - date.getTime(); //现在的时间-传入的时间 = 相差的时间（单位 = 毫秒）
+			   if (time < 0) {
+				   return '';//我也想这件事可能发生
+			   } else if (time / 1000 < 60) {
+				   return '刚刚';
+			   } else if ((time / 60000) < 60) {
+				   return parseInt((time / 60000)) + '分钟前';
+			   } else if ((time / 3600000) < 24) {
+				   return parseInt(time / 3600000) + '小时前';
+			   } else if ((time / 86400000) < 31) {
+				   return parseInt(time / 86400000) + '天前';
+			   } else if ((time / 2592000000) < 12) {
+				   return parseInt(time / 2592000000) + '月前';
+			   } else {
+				   return parseInt(time / 31536000000) + '年前';
+			   }
+
+	}
+    // Handlerbar渲染数据
+	function renderHtml(templateEle,SelectorEle,data){
+		let templateHtml = $(templateEle).html()
+		Handlebars.registerHelper('formattime',(time)=>{
+			return getTimeInfos(time)
+		})
+		Handlebars.registerHelper('isExit',(flag,options)=>{
+		   if(!flag){
+			   return options.fn(this)
+		   }
+	   })
+		let handlebarsHtml = Handlebars.compile(templateHtml)
+		let resultHtml = handlebarsHtml(data)
+		$(SelectorEle).html(resultHtml)
+
+	}
+
+
+
+    //获取首页数据
+ let result = getData(LISTURL,pageNumberAll,'GET',articleType)
+ result.then((data)=>{
+	 resultAll = resultAll.concat(data)
+     // 渲染界面
+	 renderHtml('#list-item-template','.list-container',resultAll)
+
+ }).catch(error=>{console.log(error)})
+
+	// 下拉加载
+	// 加载flag
+	var loading = false;
+    $(document).on('infinite', '.infinite-scroll-bottom',function(){
+		// 如果正在加载，则退出
+  	  if (loading) return;
+	  if(loading){
+		  return
+	  }else{
+		  loading = true
+		  //页码+1
+     	  pageNumberAll++
+     	  let result = getData(LISTURL,pageNumberAll,'GET',articleType)
+     	  result.then((data)=>{
+     		 resultAll = resultAll.concat(data)
+			 console.log(resultAll)
+     		  // 渲染界面
+     		 renderHtml('#list-item-template','.list-container',resultAll)
+
+		 }).then(()=>{
+			 loading = false
+		 }).catch(error=>{console.log(error)})
+
+	  }
+
+  	  // //容器发生改变,如果是js滚动，需要刷新滚动
+  	  // $.refreshScroller();
+	})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>
